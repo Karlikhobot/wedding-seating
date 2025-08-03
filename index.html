@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Свадебная рассадка гостей</title>
     <style>
-        /* Ваш оригинальный стиль с адаптацией */
         body {
             font-family: 'Playfair Display', serif;
             margin: 0;
@@ -184,12 +183,37 @@
             line-height: 1.6;
         }
 
+        .edit-form {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .edit-form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #f0e0e8;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #8e5a7a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #7a4d64;
+        }
+
         /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .tables-container {
                 grid-template-columns: 1fr;
-                max-height: none;
-                overflow-y: auto;
             }
             
             .table {
@@ -218,56 +242,142 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="guestTitle">Информация о госте</h2>
-            <p id="guestInfo"></p>
+            <div id="guestInfo"></div>
+            <div class="edit-form" id="editForm">
+                <input type="text" id="guestNameInput">
+                <button onclick="saveGuestInfo()">Сохранить</button>
+            </div>
+            <button onclick="enableEdit()" style="margin-top: 15px; background: #d8b1c8; color: #5d3a4a;">Редактировать</button>
         </div>
     </div>
 
     <script>
-        // Конфигурация
-        const config = {
-            tablesCount: 5,
-            guestsPerTable: 10
+        // База данных гостей
+        const guestsDB = {
+            // Формат: "номерГостя": {name: "ФИО", table: номер, notes: "инфо"}
+            1: {name: "Швайко Алена", table: 1, notes: ""},
+            2: {name: "Швайко Илья", table: 1, notes: ""},
+            3: {name: "Швайко Кристина", table: 1, notes: ""},
+            4: {name: "Швайко Никита", table: 1, notes: ""},
+            5: {name: "Бирюзова Алена", table: 1, notes: ""},
+            6: {name: "Бирюзова Анфиса", table: 1, notes: ""},
+            7: {name: "Ерофеева Евгения", table: 1, notes: ""},
+            8: {name: "Ерофеев Кирилл", table: 1, notes: ""},
+            9: {name: "Лемеш Анастасия", table: 2, notes: ""},
+            10: {name: "Кокарева Нина", table: 2, notes: ""},
+            11: {name: "Кокарев Анатолий", table: 2, notes: ""},
+            12: {name: "Женихова Анна", table: 2, notes: ""},
+            13: {name: "Женихов Владимир", table: 2, notes: ""},
+            14: {name: "Женихова Таня", table: 2, notes: ""},
+            15: {name: "Грушина Елена", table: 2, notes: ""},
+            16: {name: "Майзерова Светлана", table: 2, notes: ""},
+            17: {name: "Гусева Елена", table: 3, notes: ""},
+            18: {name: "Гусев Владимир", table: 3, notes: ""},
+            19: {name: "Майзерова Елена", table: 3, notes: ""},
+            20: {name: "Майзеров Сергей", table: 3, notes: ""},
+            21: {name: "Майзерова Татьяна", table: 3, notes: ""},
+            22: {name: "Моторкина Валентина", table: 3, notes: ""},
+            23: {name: "Гусева Татьяна", table: 3, notes: ""},
+            24: {name: "Галиева Ольга", table: 3, notes: ""},
+            25: {name: "Майзерова Александра", table: 4, notes: ""},
+            26: {name: "Елькина Софья", table: 4, notes: ""},
+            27: {name: "Лемеш София", table: 4, notes: ""},
+            28: {name: "Иванов Максим", table: 4, notes: ""},
+            29: {name: "Хошева Елена", table: 4, notes: ""},
+            30: {name: "Лемеш Олег", table: 4, notes: ""},
+            31: {name: "Лемеш Ирина", table: 4, notes: ""},
+            32: {name: "Галиев Григорий", table: 4, notes: ""},
+            33: {name: "Александров Борис", table: 5, notes: ""},
+            34: {name: "Гребенникова Полина", table: 5, notes: ""},
+            35: {name: "Крутова Марина", table: 5, notes: ""},
+            36: {name: "Бусарова Дарья", table: 5, notes: ""},
+            37: {name: "Некрасов Валентин", table: 5, notes: ""},
+            38: {name: "Некрасова Дарья", table: 5, notes: ""},
+            39: {name: "Горончук Андрей", table: 5, notes: ""},
+            40: {name: "Горончук Любовь", table: 5, notes: ""}
         };
 
-        // Генерация столов и гостей (с исправлением проблемы гостя 51)
+        // Текущий редактируемый гость
+        let currentGuestId = null;
+
+        // Инициализация страницы
+        function initPage() {
+            // Загрузка из localStorage
+            const savedData = localStorage.getItem('weddingGuests');
+            if (savedData) {
+                Object.assign(guestsDB, JSON.parse(savedData));
+            }
+            
+            generateSeating();
+        }
+
+        // Генерация рассадки
         function generateSeating() {
             const container = document.getElementById('tablesContainer');
+            container.innerHTML = '';
             
-            for (let tableNum = 1; tableNum <= config.tablesCount; tableNum++) {
+            // Создаем столы
+            const tablesCount = Math.max(...Object.values(guestsDB).map(g => g.table));
+            
+            for (let tableNum = 1; tableNum <= tablesCount; tableNum++) {
                 const tableDiv = document.createElement('div');
                 tableDiv.className = 'table';
                 tableDiv.innerHTML = `<h2>Стол ${tableNum}</h2>`;
                 
-                for (let i = 1; i <= config.guestsPerTable; i++) {
-                    const guestNumber = (tableNum - 1) * config.guestsPerTable + i;
+                // Добавляем гостей за этот стол
+                const tableGuests = Object.entries(guestsDB)
+                    .filter(([_, guest]) => guest.table == tableNum)
+                    .sort((a, b) => a[0] - b[0]);
+                
+                tableGuests.forEach(([id, guest]) => {
                     const guestDiv = document.createElement('div');
                     guestDiv.className = 'guest';
-                    guestDiv.textContent = `Гость ${guestNumber}`;
-                    
-                    // Исправленный обработчик с замыканием
-                    guestDiv.addEventListener('click', (function(num) {
-                        return function() {
-                            showGuestInfo(num);
-                        };
-                    })(guestNumber));
-                    
+                    guestDiv.textContent = guest.name;
+                    guestDiv.addEventListener('click', () => showGuestInfo(id));
                     tableDiv.appendChild(guestDiv);
-                }
+                });
                 
                 container.appendChild(tableDiv);
             }
         }
 
         // Показать информацию о госте
-        function showGuestInfo(guestNumber) {
+        function showGuestInfo(guestId) {
+            currentGuestId = guestId;
+            const guest = guestsDB[guestId];
             const modal = document.getElementById('guestModal');
             const guestTitle = document.getElementById('guestTitle');
             const guestInfo = document.getElementById('guestInfo');
             
-            guestTitle.textContent = `Гость ${guestNumber}`;
-            guestInfo.textContent = `Детальная информация о госте ${guestNumber}:\n\n• Стол: ${Math.ceil(guestNumber / config.guestsPerTable)}\n• Меню: Стандартное\n• Особые пожелания: Нет`;
+            guestTitle.textContent = guest.name;
+            guestInfo.innerHTML = `
+                <p><strong>Стол:</strong> ${guest.table}</p>
+                ${guest.notes ? `<p><strong>Примечания:</strong> ${guest.notes}</p>` : ''}
+            `;
             
+            document.getElementById('editForm').style.display = 'none';
             modal.style.display = 'block';
+        }
+
+        // Включить редактирование
+        function enableEdit() {
+            const guest = guestsDB[currentGuestId];
+            const editForm = document.getElementById('editForm');
+            const input = document.getElementById('guestNameInput');
+            
+            input.value = guest.name;
+            editForm.style.display = 'block';
+        }
+
+        // Сохранить изменения
+        function saveGuestInfo() {
+            const newName = document.getElementById('guestNameInput').value.trim();
+            if (newName && currentGuestId) {
+                guestsDB[currentGuestId].name = newName;
+                localStorage.setItem('weddingGuests', JSON.stringify(guestsDB));
+                generateSeating();
+                closeModal();
+            }
         }
 
         // Закрыть модальное окно
@@ -283,16 +393,8 @@
             }
         }
 
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            generateSeating();
-            
-            // Адаптация под мобильные
-            if (window.innerWidth <= 768) {
-                document.querySelector('.tables-wrapper').style.overflowY = 'auto';
-                document.querySelector('.tables-wrapper').style.maxHeight = '70vh';
-            }
-        });
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', initPage);
     </script>
 </body>
 </html>
