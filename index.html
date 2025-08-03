@@ -183,33 +183,6 @@
             line-height: 1.6;
         }
 
-        .edit-form {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .edit-form input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #f0e0e8;
-            border-radius: 5px;
-        }
-
-        button {
-            background: #8e5a7a;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #7a4d64;
-        }
-
         /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .tables-container {
@@ -243,18 +216,12 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="guestTitle">Информация о госте</h2>
             <div id="guestInfo"></div>
-            <div class="edit-form" id="editForm">
-                <input type="text" id="guestNameInput">
-                <button onclick="saveGuestInfo()">Сохранить</button>
-            </div>
-            <button onclick="enableEdit()" style="margin-top: 15px; background: #d8b1c8; color: #5d3a4a;">Редактировать</button>
         </div>
     </div>
 
     <script>
         // База данных гостей
         const guestsDB = {
-            // Формат: "номерГостя": {name: "ФИО", table: номер, notes: "инфо"}
             1: {name: "Швайко Алена", table: 1, notes: ""},
             2: {name: "Швайко Илья", table: 1, notes: ""},
             3: {name: "Швайко Кристина", table: 1, notes: ""},
@@ -296,9 +263,6 @@
             39: {name: "Горончук Андрей", table: 5, notes: ""},
             40: {name: "Горончук Любовь", table: 5, notes: ""}
         };
-
-        // Текущий редактируемый гость
-        let currentGuestId = null;
 
         // Инициализация страницы
         function initPage() {
@@ -343,7 +307,6 @@
 
         // Показать информацию о госте
         function showGuestInfo(guestId) {
-            currentGuestId = guestId;
             const guest = guestsDB[guestId];
             const modal = document.getElementById('guestModal');
             const guestTitle = document.getElementById('guestTitle');
@@ -355,29 +318,7 @@
                 ${guest.notes ? `<p><strong>Примечания:</strong> ${guest.notes}</p>` : ''}
             `;
             
-            document.getElementById('editForm').style.display = 'none';
             modal.style.display = 'block';
-        }
-
-        // Включить редактирование
-        function enableEdit() {
-            const guest = guestsDB[currentGuestId];
-            const editForm = document.getElementById('editForm');
-            const input = document.getElementById('guestNameInput');
-            
-            input.value = guest.name;
-            editForm.style.display = 'block';
-        }
-
-        // Сохранить изменения
-        function saveGuestInfo() {
-            const newName = document.getElementById('guestNameInput').value.trim();
-            if (newName && currentGuestId) {
-                guestsDB[currentGuestId].name = newName;
-                localStorage.setItem('weddingGuests', JSON.stringify(guestsDB));
-                generateSeating();
-                closeModal();
-            }
         }
 
         // Закрыть модальное окно
