@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Свадебная рассадка гостей</title>
     <style>
+        /* Ваши стили остаются без изменений */
         body {
             font-family: 'Playfair Display', serif;
             margin: 0;
@@ -183,6 +184,41 @@
             line-height: 1.6;
         }
 
+        .edit-form {
+            margin-top: 20px;
+        }
+
+        .edit-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #f0e0e8;
+            border-radius: 5px;
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .btn {
+            background: #8e5a7a;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: #7a4d64;
+        }
+
+        .btn-secondary {
+            background: #d8b1c8;
+            color: #5d3a4a;
+        }
+
         /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .tables-container {
@@ -216,13 +252,17 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="guestTitle">Информация о госте</h2>
             <div id="guestInfo"></div>
+            <div class="edit-form">
+                <textarea id="guestNotesInput" placeholder="Добавьте описание гостя..."></textarea>
+                <button class="btn" onclick="saveGuestNotes()">Сохранить описание</button>
+            </div>
         </div>
     </div>
 
     <script>
         // База данных гостей
         const guestsDB = {
-            1: {name: "Швайко Алена", table: 1, notes: "Сестра Жениха"},
+            1: {name: "Швайко Алена", table: 1, notes: ""},
             2: {name: "Швайко Илья", table: 1, notes: ""},
             3: {name: "Швайко Кристина", table: 1, notes: ""},
             4: {name: "Швайко Никита", table: 1, notes: ""},
@@ -263,6 +303,9 @@
             39: {name: "Горончук Андрей", table: 5, notes: ""},
             40: {name: "Горончук Любовь", table: 5, notes: ""}
         };
+
+        // Текущий редактируемый гость
+        let currentGuestId = null;
 
         // Инициализация страницы
         function initPage() {
@@ -307,18 +350,35 @@
 
         // Показать информацию о госте
         function showGuestInfo(guestId) {
+            currentGuestId = guestId;
             const guest = guestsDB[guestId];
             const modal = document.getElementById('guestModal');
             const guestTitle = document.getElementById('guestTitle');
             const guestInfo = document.getElementById('guestInfo');
+            const notesInput = document.getElementById('guestNotesInput');
             
             guestTitle.textContent = guest.name;
             guestInfo.innerHTML = `
                 <p><strong>Стол:</strong> ${guest.table}</p>
-                ${guest.notes ? `<p><strong>Примечания:</strong> ${guest.notes}</p>` : ''}
+                ${guest.notes ? `<p><strong>Описание:</strong> ${guest.notes}</p>` : '<p><em>Описание отсутствует</em></p>'}
             `;
             
+            notesInput.value = guest.notes || '';
             modal.style.display = 'block';
+        }
+
+        // Сохранить описание гостя
+        function saveGuestNotes() {
+            if (!currentGuestId) return;
+            
+            const notesInput = document.getElementById('guestNotesInput');
+            guestsDB[currentGuestId].notes = notesInput.value.trim();
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('weddingGuests', JSON.stringify(guestsDB));
+            
+            // Обновляем отображение
+            showGuestInfo(currentGuestId);
         }
 
         // Закрыть модальное окно
