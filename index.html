@@ -3,105 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Рассадка гостей</title>
+    <title>Свадебная рассадка гостей</title>
     <style>
-        /* Базовые стили */
-        :root {
-            --primary-color: #8e44ad;
-            --secondary-color: #d4af37;
-            --text-color: #333;
-            --bg-color: #f9f9f9;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        /* Ваш любимый стиль с адаптацией */
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Playfair Display', serif;
+            margin: 0;
             padding: 20px;
+            min-height: 100vh;
+            color: #5d3a4a;
+            background: #fff9fb url('assets/wedding-bg.jpg') center/cover fixed;
+            position: relative;
+            overflow-x: hidden;
         }
-        
-        /* Шапка */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: linear-gradient(90deg, var(--primary-color), #9b59b6);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 245, 250, 0.85);
+            z-index: -1;
         }
-        
+
         h1 {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            text-align: center;
+            color: #7a4d64;
+            margin: 20px 0 30px;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
             font-weight: 500;
+            letter-spacing: 1px;
+            position: relative;
         }
-        
-        /* Контейнер столов */
+
+        h1::after {
+            content: "";
+            display: block;
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d8b1c8, transparent);
+            margin: 15px auto 0;
+        }
+
+        .tables-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px);
+            padding: 10px;
+        }
+
         .tables-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
+            padding: 15px;
             width: 100%;
-            margin: 0 auto;
+            box-sizing: border-box;
         }
-        
-        /* Стили стола */
+
         .table {
-            background: white;
+            border: 1px solid #f0e0e8;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border-top: 4px solid var(--secondary-color);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .table h2 {
-            color: var(--primary-color);
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #eee;
-        }
-        
-        .guests-list {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-        }
-        
-        .guest {
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: #f8f8f8;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            text-align: center;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 15px rgba(125, 75, 100, 0.08);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .table::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #e8c8dc, #d8b1c8);
+        }
+
+        .table h2 {
+            color: #8e5a7a;
+            font-size: 1.4rem;
+            margin: 0 0 20px 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .table h2::before,
+        .table h2::after {
+            content: "❀";
+            color: #d8b1c8;
+            margin: 0 10px;
+            font-size: 0.9em;
+        }
+
+        .guest {
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #f5e8f0;
+            color: #6d4a5a;
+            font-weight: 400;
+            position: relative;
+            text-align: center;
+        }
+
         .guest:hover {
-            background: #f0f0f0;
-            transform: translateX(3px);
+            background-color: #fdf5fa;
+            transform: translateX(5px);
+            border-color: #e8c8dc;
         }
-        
-        /* Адаптация под мобильные */
+
+        .guest::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
+            height: 0;
+            background: linear-gradient(to bottom, #d8a2c0, #c893b5);
+            transition: height 0.3s ease;
+        }
+
+        .guest:hover::before {
+            height: 100%;
+        }
+
+        /* Адаптация для мобильных */
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-                display: block;
-                height: auto;
+            .tables-wrapper {
+                max-height: none;
+                overflow-y: visible;
+                padding: 5px;
             }
             
             .tables-container {
@@ -112,107 +153,72 @@
             .table {
                 padding: 15px;
             }
-            
-            .guest {
-                padding: 10px;
-                font-size: 1rem;
-            }
         }
-        
-        /* Для очень маленьких экранов */
+
         @media (max-width: 480px) {
-            .header {
+            body {
                 padding: 10px;
-                margin-bottom: 20px;
             }
             
             h1 {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
+                margin: 10px 0 20px;
             }
             
-            .table h2 {
-                font-size: 1.3rem;
+            .guest {
+                padding: 10px;
+                font-size: 0.9rem;
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <h1>Рассадка гостей</h1>
-    </div>
+    <h1>Рассадка гостей</h1>
     
-    <div class="tables-container" id="tablesContainer">
-        <!-- Столы будут сгенерированы скриптом -->
+    <div class="tables-wrapper">
+        <div class="tables-container" id="tablesContainer">
+            <!-- Столы будут сгенерированы скриптом -->
+        </div>
     </div>
 
     <script>
         // Конфигурация
         const config = {
             tablesCount: 5,
-            guestsPerTable: 10,
-            guestNames: [
-                "Анна Иванова", "Петр Сидоров", "Мария Петрова", "Алексей Смирнов", 
-                "Ольга Кузнецова", "Дмитрий Попов", "Елена Васильева", "Сергей Федоров",
-                "Наталья Морозова", "Иван Новиков", "Александр Волков", "Екатерина Белова",
-                "Михаил Лебедев", "Светлана Соколова", "Андрей Козлов", "Татьяна Новикова",
-                "Артем Егоров", "Юлия Зайцева", "Павел Павлов", "Виктория Семенова",
-                "Николай Голубев", "Алина Виноградова", "Георгий Богданов", "Маргарита Воробьева",
-                "Федор Филиппов", "Ксения Комарова", "Роман Орлов", "Евгения Дмитриева",
-                "Вадим Жуков", "Арина Макарова", "Олег Никитин", "Валерия Захарова",
-                "Станислав Соловьев", "Диана Борисова", "Ярослав Михайлов", "Ангелина Ковалева",
-                "Тимофей Яковлев", "Вероника Андреева", "Глеб Гусев", "Лидия Титова",
-                "Василий Кузьмин", "Ульяна Ильина", "Даниил Максимов", "Алиса Полякова",
-                "Егор Сорокин", "Кристина Васнецова", "Арсений Медведев", "Элина Романова",
-                "Семен Осипов", "Полина Морозова"
-            ]
+            guestsPerTable: 10
         };
 
-        // Генерация рассадки
+        // Генерация столов и гостей
         function generateSeating() {
             const container = document.getElementById('tablesContainer');
-            let guestIndex = 0;
+            let guestNumber = 1;
             
             for (let tableNum = 1; tableNum <= config.tablesCount; tableNum++) {
                 const tableDiv = document.createElement('div');
                 tableDiv.className = 'table';
-                tableDiv.innerHTML = `<h2>Стол ${tableNum}</h2><div class="guests-list"></div>`;
-                
-                const guestsList = tableDiv.querySelector('.guests-list');
+                tableDiv.innerHTML = `<h2>Стол ${tableNum}</h2>`;
                 
                 for (let i = 0; i < config.guestsPerTable; i++) {
-                    if (guestIndex >= config.guestNames.length) break;
-                    
                     const guestDiv = document.createElement('div');
                     guestDiv.className = 'guest';
-                    guestDiv.textContent = config.guestNames[guestIndex];
-                    guestsList.appendChild(guestDiv);
-                    guestIndex++;
+                    guestDiv.textContent = `Гость ${guestNumber}`;
+                    guestDiv.addEventListener('click', () => showGuestInfo(guestNumber));
+                    tableDiv.appendChild(guestDiv);
+                    guestNumber++;
                 }
                 
                 container.appendChild(tableDiv);
             }
         }
 
-        // Инициализация при загрузке
-        window.addEventListener('DOMContentLoaded', generateSeating);
-        
-        // Адаптация под размер экрана
-        function adjustLayout() {
-            const container = document.getElementById('tablesContainer');
-            const isMobile = window.innerWidth <= 768;
-            
-            if (isMobile) {
-                document.body.style.overflowY = 'auto';
-                container.style.maxHeight = 'none';
-            } else {
-                document.body.style.overflowY = 'hidden';
-                container.style.maxHeight = 'calc(100vh - 120px)';
-            }
+        // Показать информацию о госте
+        function showGuestInfo(guestNumber) {
+            alert(`Информация о госте ${guestNumber}\nЗдесь могут быть детали: имя, меню и т.д.`);
         }
 
-        window.addEventListener('load', adjustLayout);
-        window.addEventListener('resize', adjustLayout);
+        // Инициализация
+        window.addEventListener('DOMContentLoaded', generateSeating);
     </script>
 </body>
 </html>
