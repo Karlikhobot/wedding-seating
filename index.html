@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Свадебная рассадка гостей</title>
     <style>
-        /* Ваш любимый стиль с адаптацией */
+        /* Ваш оригинальный стиль с адаптацией */
         body {
             font-family: 'Playfair Display', serif;
             margin: 0;
@@ -51,27 +51,22 @@
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            overflow-y: auto;
-            max-height: calc(100vh - 150px);
             padding: 10px;
         }
 
         .tables-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            padding: 15px;
-            width: 100%;
-            box-sizing: border-box;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            justify-content: center;
         }
 
         .table {
             border: 1px solid #f0e0e8;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             background-color: rgba(255, 255, 255, 0.95);
             box-shadow: 0 5px 15px rgba(125, 75, 100, 0.08);
-            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -88,8 +83,8 @@
 
         .table h2 {
             color: #8e5a7a;
-            font-size: 1.4rem;
-            margin: 0 0 20px 0;
+            font-size: 1.3rem;
+            margin: 0 0 15px 0;
             position: relative;
             text-align: center;
         }
@@ -98,13 +93,13 @@
         .table h2::after {
             content: "❀";
             color: #d8b1c8;
-            margin: 0 10px;
-            font-size: 0.9em;
+            margin: 0 8px;
+            font-size: 0.8em;
         }
 
         .guest {
-            padding: 12px;
-            margin: 8px 0;
+            padding: 10px;
+            margin: 6px 0;
             background-color: #fff;
             border-radius: 8px;
             cursor: pointer;
@@ -114,11 +109,12 @@
             font-weight: 400;
             position: relative;
             text-align: center;
+            font-size: 0.9rem;
         }
 
         .guest:hover {
             background-color: #fdf5fa;
-            transform: translateX(5px);
+            transform: translateX(3px);
             border-color: #e8c8dc;
         }
 
@@ -137,37 +133,72 @@
             height: 100%;
         }
 
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(93, 58, 74, 0.7);
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10vh auto;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(93, 58, 74, 0.3);
+            border: 1px solid #f0e0e8;
+            position: relative;
+        }
+
+        .close {
+            color: #b88a9e;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #8e5a7a;
+        }
+
+        #guestTitle {
+            color: #8e5a7a;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f5e8f0;
+        }
+
+        #guestInfo {
+            color: #6d4a5a;
+            line-height: 1.6;
+        }
+
         /* Адаптация для мобильных */
         @media (max-width: 768px) {
-            .tables-wrapper {
-                max-height: none;
-                overflow-y: visible;
-                padding: 5px;
-            }
-            
             .tables-container {
                 grid-template-columns: 1fr;
-                gap: 15px;
+                max-height: none;
+                overflow-y: auto;
             }
             
             .table {
                 padding: 15px;
             }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-                margin: 10px 0 20px;
-            }
             
             .guest {
-                padding: 10px;
-                font-size: 0.9rem;
+                padding: 12px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -181,6 +212,15 @@
             <!-- Столы будут сгенерированы скриптом -->
         </div>
     </div>
+    
+    <!-- Модальное окно -->
+    <div id="guestModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="guestTitle">Информация о госте</h2>
+            <p id="guestInfo"></p>
+        </div>
+    </div>
 
     <script>
         // Конфигурация
@@ -189,23 +229,29 @@
             guestsPerTable: 10
         };
 
-        // Генерация столов и гостей
+        // Генерация столов и гостей (с исправлением проблемы гостя 51)
         function generateSeating() {
             const container = document.getElementById('tablesContainer');
-            let guestNumber = 1;
             
             for (let tableNum = 1; tableNum <= config.tablesCount; tableNum++) {
                 const tableDiv = document.createElement('div');
                 tableDiv.className = 'table';
                 tableDiv.innerHTML = `<h2>Стол ${tableNum}</h2>`;
                 
-                for (let i = 0; i < config.guestsPerTable; i++) {
+                for (let i = 1; i <= config.guestsPerTable; i++) {
+                    const guestNumber = (tableNum - 1) * config.guestsPerTable + i;
                     const guestDiv = document.createElement('div');
                     guestDiv.className = 'guest';
                     guestDiv.textContent = `Гость ${guestNumber}`;
-                    guestDiv.addEventListener('click', () => showGuestInfo(guestNumber));
+                    
+                    // Исправленный обработчик с замыканием
+                    guestDiv.addEventListener('click', (function(num) {
+                        return function() {
+                            showGuestInfo(num);
+                        };
+                    })(guestNumber));
+                    
                     tableDiv.appendChild(guestDiv);
-                    guestNumber++;
                 }
                 
                 container.appendChild(tableDiv);
@@ -214,11 +260,39 @@
 
         // Показать информацию о госте
         function showGuestInfo(guestNumber) {
-            alert(`Информация о госте ${guestNumber}\nЗдесь могут быть детали: имя, меню и т.д.`);
+            const modal = document.getElementById('guestModal');
+            const guestTitle = document.getElementById('guestTitle');
+            const guestInfo = document.getElementById('guestInfo');
+            
+            guestTitle.textContent = `Гость ${guestNumber}`;
+            guestInfo.textContent = `Детальная информация о госте ${guestNumber}:\n\n• Стол: ${Math.ceil(guestNumber / config.guestsPerTable)}\n• Меню: Стандартное\n• Особые пожелания: Нет`;
+            
+            modal.style.display = 'block';
+        }
+
+        // Закрыть модальное окно
+        function closeModal() {
+            document.getElementById('guestModal').style.display = 'none';
+        }
+
+        // Закрытие при клике вне окна
+        window.onclick = function(event) {
+            const modal = document.getElementById('guestModal');
+            if (event.target == modal) {
+                closeModal();
+            }
         }
 
         // Инициализация
-        window.addEventListener('DOMContentLoaded', generateSeating);
+        document.addEventListener('DOMContentLoaded', function() {
+            generateSeating();
+            
+            // Адаптация под мобильные
+            if (window.innerWidth <= 768) {
+                document.querySelector('.tables-wrapper').style.overflowY = 'auto';
+                document.querySelector('.tables-wrapper').style.maxHeight = '70vh';
+            }
+        });
     </script>
 </body>
 </html>
