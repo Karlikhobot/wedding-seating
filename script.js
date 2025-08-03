@@ -18,7 +18,14 @@ function generateSeating() {
             const guestDiv = document.createElement('div');
             guestDiv.className = 'guest';
             guestDiv.textContent = `Гость ${guestNumber}`;
-            guestDiv.onclick = () => showGuestInfo(guestNumber);
+            
+            // Исправленный обработчик события
+            guestDiv.addEventListener('click', (function(num) {
+                return function() {
+                    showGuestInfo(num);
+                };
+            })(guestNumber));
+            
             tableDiv.appendChild(guestDiv);
             guestNumber++;
         }
@@ -44,12 +51,12 @@ function closeModal() {
     document.getElementById('guestModal').style.display = 'none';
 }
 
-// Получить информацию о госте (можно заменить на реальные данные)
+// Получить информацию о госте
 function getGuestInfo(guestNumber) {
     const info = {
         name: `Гость ${guestNumber}`,
         table: Math.ceil(guestNumber / config.guestsPerTable),
-        notes: "Дополнительная информация о госте"
+        notes: "Пример дополнительной информации"
     };
     
     return `
