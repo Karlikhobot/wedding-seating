@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Свадебная рассадка гостей</title>
     <style>
-        /* Ваши стили остаются без изменений */
         body {
             font-family: 'Playfair Display', serif;
             margin: 0;
@@ -133,7 +132,6 @@
             height: 100%;
         }
 
-        /* Модальное окно */
         .modal {
             display: none;
             position: fixed;
@@ -219,7 +217,6 @@
             color: #5d3a4a;
         }
 
-        /* Адаптация для мобильных */
         @media (max-width: 768px) {
             .tables-container {
                 grid-template-columns: 1fr;
@@ -260,7 +257,7 @@
     </div>
 
     <script>
-        // База данных гостей
+        // База данных гостей (обновлённая версия)
         const guestsDB = {
             1: {name: "Швайко Алена", table: 1, notes: ""},
             2: {name: "Швайко Илья", table: 1, notes: ""},
@@ -268,8 +265,7 @@
             4: {name: "Швайко Никита", table: 1, notes: ""},
             5: {name: "Бирюзова Алена", table: 1, notes: ""},
             6: {name: "Бирюзова Анфиса", table: 1, notes: ""},
-            7: {name: "Ерофеева Евгения", table: 1, notes: ""},
-            8: {name: "Ерофеев Кирилл", table: 1, notes: ""},
+            // Ерофеевы (ID 7 и 8) удалены по просьбе
             9: {name: "Лемеш Анастасия", table: 2, notes: ""},
             10: {name: "Кокарева Нина", table: 2, notes: ""},
             11: {name: "Кокарев Анатолий", table: 2, notes: ""},
