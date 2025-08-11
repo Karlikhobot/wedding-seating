@@ -257,7 +257,7 @@
     </div>
 
     <script>
-        // База данных гостей (обновлённая версия)
+        // База данных гостей (актуальная версия 2.0)
         const guestsDB = {
             1: {name: "Швайко Алена", table: 1, notes: ""},
             2: {name: "Швайко Илья", table: 1, notes: ""},
@@ -265,7 +265,7 @@
             4: {name: "Швайко Никита", table: 1, notes: ""},
             5: {name: "Бирюзова Алена", table: 1, notes: ""},
             6: {name: "Бирюзова Анфиса", table: 1, notes: ""},
-            // Ерофеевы (ID 7 и 8) удалены по просьбе
+            // Ерофеевы (ID 7 и 8) удалены
             9: {name: "Лемеш Анастасия", table: 2, notes: ""},
             10: {name: "Кокарева Нина", table: 2, notes: ""},
             11: {name: "Кокарев Анатолий", table: 2, notes: ""},
@@ -303,8 +303,21 @@
         // Текущий редактируемый гость
         let currentGuestId = null;
 
+        // Очистка устаревших данных
+        function clearOldData() {
+            const savedVersion = localStorage.getItem('weddingDataVersion');
+            const currentVersion = '2.0'; // Увеличивайте при изменениях базы гостей
+            
+            if (savedVersion !== currentVersion) {
+                localStorage.removeItem('weddingGuests');
+                localStorage.setItem('weddingDataVersion', currentVersion);
+            }
+        }
+
         // Инициализация страницы
         function initPage() {
+            clearOldData(); // Сбрасываем старые данные при несовпадении версий
+            
             // Загрузка из localStorage
             const savedData = localStorage.getItem('weddingGuests');
             if (savedData) {
